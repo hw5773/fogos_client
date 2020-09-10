@@ -13,9 +13,8 @@ import sun.misc.Request;
 
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 
 
@@ -23,7 +22,7 @@ public class FogClient {
     private static FogOSClient fogos;
     private static final String rootPath = "D:\tmp";
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException, InvalidKeySpecException, SignatureException, InvalidKeyException {
             // 1. Initialize the FogOSClient instance.
             // This will automatically build the contentStore inside the core,
             // a list of services, and a list of resources
@@ -84,10 +83,7 @@ public class FogClient {
                 reply = fogos.getReplyMessage();
             } while (reply == null);
             replyList = reply.getReplyList();
-
-            for (ReplyEntry e : replyList) {
-                chosen = e.getFlexID();
-            }
+            chosen = replyList.get(0).getFlexID();
 
             request = fogos.makeRequestMessage(chosen);
             fogos.sendRequestMessage(request);
