@@ -5,10 +5,12 @@ import FogOSClient.FogOSClient;
 import FogOSContent.Content;
 import FogOSMessage.*;
 import FogOSResource.Resource;
+import FogOSResource.ResourceType;
 import FogOSSecurity.Role;
 import FogOSSecurity.SecureFlexIDSession;
 import FogOSService.Service;
 import FogOSService.ServiceContext;
+import FogOSService.ServiceType;
 import sun.misc.Request;
 
 import java.io.InputStreamReader;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 
 public class FogClient {
     private static FogOSClient fogos;
-    private static final String rootPath = "D:\tmp";
+    private static final String rootPath = "D:\\tmp";
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException, InvalidKeySpecException, SignatureException, InvalidKeyException {
             // 1. Initialize the FogOSClient instance.
@@ -30,7 +32,8 @@ public class FogClient {
 
             // 2. Add manually resource, content, or service
             // 2-1. Add resources to be monitored
-            Resource testResource = new Resource("Test", "", "hop", false) {
+            Resource testResource = new Resource("Test", ResourceType.NetworkInterface,
+                    "", "hop", false) {
                 @Override
                 public void monitorResource() {
                     this.setCurr(Integer.toString(Integer.parseInt(this.getCurr()) + 1));
@@ -50,7 +53,7 @@ public class FogClient {
             KeyPair testServiceKeyPair = testServiceKeyPairGenerator.genKeyPair();
             Locator testServiceLoc = new Locator(InterfaceType.ETH, "127.0.0.1", 5550);
             ServiceContext testServiceCtx = new ServiceContext("FogClientTestService",
-                    testServiceKeyPair, testServiceLoc, false, null);
+                    ServiceType.Streaming, testServiceKeyPair, testServiceLoc, false, null);
             Service testService = new Service(testServiceCtx) {
                 @Override
                 public void processInputFromPeer() {
