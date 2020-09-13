@@ -22,7 +22,9 @@ import java.util.ArrayList;
 
 public class FogClient {
     private static FogOSClient fogos;
+    //private static final String rootPath = "C:\\Users\\HMLEE";
     private static final String rootPath = "D:\\tmp";
+
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException, InvalidKeySpecException, SignatureException, InvalidKeyException {
             // 1. Initialize the FogOSClient instance.
@@ -32,18 +34,45 @@ public class FogClient {
 
             // 2. Add manually resource, content, or service
             // 2-1. Add resources to be monitored
+        /*
             Resource testResource = new Resource("Test", ResourceType.NetworkInterface,
-                    "", "hop", false) {
+                "", "hop", false) {
                 @Override
                 public void monitorResource() {
                     this.setCurr(Integer.toString(Integer.parseInt(this.getCurr()) + 1));
                     System.out.println("[Resource Test] " + this.getCurr() + " " + this.getUnit());
                 }
             };
+         */
 
-            fogos.addResource(testResource);
+            Resource ifaceResource = new Resource("ifaceType", ResourceType.NetworkInterface,
+                    "", "Ethernet", false) {
+                @Override
+                public void monitorResource() {
 
-            // 2-2. Add content manually if any
+                }
+            };
+            Resource hwAddrResource = new Resource("hwAddress", ResourceType.NetworkInterface,
+                "", "20-12-A3-B2-8J-KU", false) {
+                @Override
+                public void monitorResource() {
+
+                }
+            };
+            Resource ipResource = new Resource("ipv4", ResourceType.NetworkInterface,
+                "", "1.2.3.4", false) {
+                @Override
+                public void monitorResource() {
+
+                }
+            };
+
+            fogos.addResource(ifaceResource);
+            fogos.addResource(hwAddrResource);
+            fogos.addResource(ipResource);
+
+        // 2-2. Add content manually if any
+            //Content testContent = new Content("testContent", "C:\\Users\\HMLEE\\test.png", true);
             Content testContent = new Content("testContent", "D:\tmp\test.jpg", true);
             fogos.addContent(testContent);
 
@@ -71,6 +100,7 @@ public class FogClient {
             // 3. begin the FogOS interaction
             fogos.begin();
             System.out.println("[FogClient] FogOS Core begins.");
+            //System.exit(0);
 
             // 4. do something needed for this application
             QueryMessage query = fogos.makeQueryMessage("test");
