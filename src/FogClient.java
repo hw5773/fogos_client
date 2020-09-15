@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class FogClient {
     private static FogOSClient fogos;
-    //private static final String rootPath = "C:\\Users\\HMLEE";
+    //private static final String rootPath = "C:\\Users\\HMLEE\\FogOS";
     private static final String rootPath = "D:\\tmp";
 
 
@@ -45,6 +45,7 @@ public class FogClient {
             };
          */
 
+        /*
             Resource ifaceResource = new Resource("ifaceType", ResourceType.NetworkInterface,
                     "", "Ethernet", false) {
                 @Override
@@ -71,9 +72,11 @@ public class FogClient {
             fogos.addResource(hwAddrResource);
             fogos.addResource(ipResource);
 
+         */
+
         // 2-2. Add content manually if any
-            //Content testContent = new Content("testContent", "C:\\Users\\HMLEE\\test.png", true);
-            Content testContent = new Content("testContent", "D:\tmp\test.jpg", true);
+            //Content testContent = new Content("testContent", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
+            Content testContent = new Content("test.jpg", "D:\\tmp\\test.jpg", true, "SHA1-HASH");
             fogos.addContent(testContent);
 
             // 2-3. Add service to run
@@ -99,6 +102,11 @@ public class FogClient {
 
             // 3. begin the FogOS interaction
             fogos.begin();
+
+            // Explicitly register Content
+           //fogos.registerContent("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt");
+           fogos.registerContent("test.jpg", "D:\\tmp\\test.jpg");
+
             System.out.println("[FogClient] FogOS Core begins.");
             //System.exit(0);
 
