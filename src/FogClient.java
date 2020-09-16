@@ -75,7 +75,7 @@ public class FogClient {
          */
 
         // 2-2. Add content manually if any
-            //Content testContent = new Content("testContent", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
+            //Content testContent = new Content("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
             Content testContent = new Content("test.jpg", "D:\\tmp\\test.jpg", true, "SHA1-HASH");
             fogos.addContent(testContent);
 
@@ -103,15 +103,19 @@ public class FogClient {
             // 3. begin the FogOS interaction
             fogos.begin();
 
-            // Explicitly register Content
-           //fogos.registerContent("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt");
-           fogos.registerContent("test.jpg", "D:\\tmp\\test.jpg");
-
             System.out.println("[FogClient] FogOS Core begins.");
-            //System.exit(0);
+
+            // Explicitly register Content
+            fogos.registerContent(testContent);
+           //fogos.registerContent("test.jpg", "D:\\tmp\\test.jpg");
+
+            // Explicitly register service
+            fogos.registerService(testService);
 
             // 4. do something needed for this application
-            QueryMessage query = fogos.makeQueryMessage("test");
+            QueryMessage query = fogos.makeQueryMessage("Content", "Video", "resolution", true, 10);
+            query.setAttribute("keyword", "soccer", "", "");
+
             ReplyMessage reply = null;
             ArrayList<ReplyEntry> replyList;
             FlexID chosen, peer;
