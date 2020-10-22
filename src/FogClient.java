@@ -1,5 +1,6 @@
 import FlexID.FlexID;
 import FlexID.InterfaceType;
+import FlexID.FlexIDFactory;
 import FlexID.Locator;
 import FogOSClient.FogOSClient;
 import FogOSContent.Content;
@@ -11,23 +12,25 @@ import FogOSSecurity.SecureFlexIDSession;
 import FogOSService.Service;
 import FogOSService.ServiceContext;
 import FogOSService.ServiceType;
-import sun.misc.Request;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class FogClient {
     private static FogOSClient fogos;
-    //private static final String rootPath = "C:\\Users\\HMLEE\\FogOS";
-    private static final String rootPath = "D:\\tmp";
+    private static final String rootPath = "C:\\Users\\HMLEE\\FogOS";
+    //private static final String rootPath = "D:\\tmp";
 
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException, InvalidKeySpecException, SignatureException, InvalidKeyException, IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
             // 1. Initialize the FogOSClient instance.
             // This will automatically build the contentStore inside the core,
             // a list of services, and a list of resources
@@ -46,15 +49,15 @@ public class FogClient {
             };
 
         // 2-2. Add content manually if any
-            //Content testContent = new Content("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
-            Content testContent = new Content("test.png", "D:\\tmp\\test.png", true, "SHA1-HASH");
+            Content testContent = new Content("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
+            //Content testContent = new Content("test.png", "D:\\tmp\\test.png", true, "SHA1-HASH");
             fogos.addContent(testContent);
 
             // 2-3. Add service to run
             KeyPairGenerator testServiceKeyPairGenerator = KeyPairGenerator.getInstance("RSA");
             testServiceKeyPairGenerator.initialize(2048);
             KeyPair testServiceKeyPair = testServiceKeyPairGenerator.genKeyPair();
-            Locator testServiceLoc = new Locator(InterfaceType.ETH, "127.0.0.1", 5551);
+            Locator testServiceLoc = new Locator(InterfaceType.ETH, "127.0.0.1", 5550);
             ServiceContext testServiceCtx = new ServiceContext("FogClientTestService",
                     ServiceType.Streaming, testServiceKeyPair, testServiceLoc, false, null);
             Service testService = new Service(testServiceCtx) {
@@ -77,11 +80,14 @@ public class FogClient {
             System.out.println("[FogClient] FogOS Core begins.");
 
             // Explicitly register Content
-            fogos.registerContent(testContent);
+            HashMap<String, String> attributes = new HashMap<String, String>();
+            attributes.put("title", "TestContent");
+            attributes.put("desc", "Test");
+            fogos.registerContent(testContent, attributes);
            //fogos.registerContent("test.jpg", "D:\\tmp\\test.jpg");
 
             // Explicitly register service
-            fogos.registerService(testService);
+            //fogos.registerService(testService);
 
             // 4. do something needed for this application
             QueryMessage query = fogos.makeQueryMessage("Content", "Video", "resolution", true, 10);
@@ -108,10 +114,23 @@ public class FogClient {
                 response = fogos.getResponseMessage();
             } while (response == null);
 
+            FlexIDFactory factory = new FlexIDFactory();
+            FlexID id = factory.generateDeviceID();
             peer = response.getPeerID();
-            session = new SecureFlexIDSession(Role.INITIATOR, peer);
+            session = new SecureFlexIDSession(Role.INITIATOR, id, peer);
+            int ret = session.doHandshake(0);
 
-            session.send("Test Message!");
+            session.send("GET / HTTP/1.2 /dash/encoding/dash.mpd");
+
+            byte[] buf = new byte[1024];
+            int rcvd = -1;
+            while (rcvd < 0) {
+                //System.out.println("BBBBBB");
+                rcvd = session.recv(buf, 1024);
+            }
+
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println(new String(buf).trim());
 
             // 5. finalize the FogOS interaction
             fogos.exit();
