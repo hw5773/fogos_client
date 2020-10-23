@@ -26,8 +26,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class FogClient {
     private static FogOSClient fogos;
-    private static final String rootPath = "C:\\Users\\HMLEE\\FogOS";
-    //private static final String rootPath = "D:\\tmp";
+    //private static final String rootPath = "C:\\Users\\HMLEE\\FogOS";
+    private static final String rootPath = "D:\\tmp";
 
 
     public static void main(String[] args) throws Exception {
@@ -49,8 +49,8 @@ public class FogClient {
             };
 
         // 2-2. Add content manually if any
-            Content testContent = new Content("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
-            //Content testContent = new Content("test.png", "D:\\tmp\\test.png", true, "SHA1-HASH");
+            //Content testContent = new Content("test.txt", "C:\\Users\\HMLEE\\FogOS\\test.txt", true, "Hash");
+            Content testContent = new Content("test.png", "D:\\tmp\\test.png", true, "SHA1-HASH");
             fogos.addContent(testContent);
 
             // 2-3. Add service to run
@@ -120,13 +120,16 @@ public class FogClient {
             session = new SecureFlexIDSession(Role.INITIATOR, id, peer);
             int ret = session.doHandshake(0);
 
-            session.send("GET / HTTP/1.2 /dash/encoding/dash.mpd");
 
-            byte[] buf = new byte[1024];
+            String a = "GET  /dash/test_input.mp4  HTTP/1.1 \nConnection: keep-alive\r\nHost: 52.78.23.173\r\n\n\n";
+            //a = "GET DASH\n";
+            session.send(a);
+
+            byte[] buf = new byte[16384];
             int rcvd = -1;
             while (rcvd < 0) {
                 //System.out.println("BBBBBB");
-                rcvd = session.recv(buf, 1024);
+                rcvd = session.recv(buf, 16384);
             }
 
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
