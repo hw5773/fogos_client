@@ -117,22 +117,23 @@ public class FogClient {
             FlexIDFactory factory = new FlexIDFactory();
             FlexID id = factory.generateDeviceID();
             peer = response.getPeerID();
+            System.out.println("IP: " + peer.getLocator().getAddr() + ":" + peer.getLocator().getPort());
             session = new SecureFlexIDSession(Role.INITIATOR, id, peer);
             int ret = session.doHandshake(0);
 
 
             String a = "GET  /dash/test_input.mp4  HTTP/1.1 \nConnection: keep-alive\r\nHost: 52.78.23.173\r\n\n\n";
+            int rcvd = -1;
             //a = "GET DASH\n";
             session.send(a);
 
             byte[] buf = new byte[16384];
-            int rcvd = -1;
             while (rcvd < 0) {
                 //System.out.println("BBBBBB");
                 rcvd = session.recv(buf, 16384);
+                Thread.sleep(1000);
             }
 
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println(new String(buf).trim());
 
             // 5. finalize the FogOS interaction
