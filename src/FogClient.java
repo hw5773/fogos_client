@@ -131,12 +131,19 @@ public class FogClient {
             while (rcvd < 0) {
                 //System.out.println("BBBBBB");
                 rcvd = session.recv(buf, 16384);
-                Thread.sleep(1000);
+
+                if (rcvd > 0) {
+                    System.out.print("First 5 bytes: " + buf[0] + " " + buf[1] + " " + buf[2] + " " + buf[3] + " " + buf[4]);
+                    System.out.println();
+
+                    System.out.print("Last 5 bytes: " + buf[rcvd-5] + " " + buf[rcvd-4] + " " + buf[rcvd-3] + " " + buf[rcvd-2] + " " + buf[rcvd-1]);
+                    System.out.println();
+
+                    Thread.sleep(2000);
+                }
             }
 
-            System.out.println(new String(buf).trim());
-
-            // 5. finalize the FogOS interaction
+        // 5. finalize the FogOS interaction
             fogos.exit();
             System.out.println("[FogClient] FogOS Core quits.");
             System.exit(0);
